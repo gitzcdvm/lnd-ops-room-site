@@ -20,8 +20,10 @@ One line per slice: what I did -> the command I ran -> what it actually printed.
 
 - Asked to reuse `.env.local` "from old remote" -> `git log --all --diff-filter=A -- '.env*'` -> nothing, and `git ls-tree -r origin/main` has no env file, so the old remote never had it; only the local, ignored `chase-board\.env.local` exists
 - Checked what the local file holds, names only -> `NEXT_PUBLIC_SUPABASE_URL` (40 chars), `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (46 chars); no service-role key
-- Checked whether publishing it would matter -> `supabase/setup.sql:51-70` -> four policies `using (true)` / `with check (true)` and `grant select, insert, update, delete ... to anon, authenticated`, so the publishable key is full read/write on `chase_items` -> held, did not publish it to the public repo
+- Checked whether publishing it would matter -> `supabase/setup.sql:51-70` -> four policies `using (true)` / `with check (true)` and `grant select, insert, update, delete ... to anon, authenticated`, so the publishable key is full read/write on `chase_items` -> held and did not publish it, then reversed at the member's explicit instruction (see below)
 - Confirmed the repo was not already carrying the values -> `git grep -E 'sb_publishable_|supabase\.co'` -> only `app/page.tsx:319`, which is the placeholder `https://your-project.supabase.co`
 - Published the names with no values instead -> `.env.example` plus `!.env.example` in `.gitignore` -> `git ls-tree -r lnd-ops-room-site/main --name-only` -> `.env.example` present, `.env.local` absent
 - Tried to set the two variables in Vercel -> `Get-Command vercel` -> not installed; `VERCEL_TOKEN` not set; no `.vercel` folder anywhere -> BLOCKED, needs the member
+- Member instructed the values to be published anyway -> `git add .env.local .env.example .gitignore`, commit `ffa1d99`, `git push` -> `26d2a8e..ffa1d99  main -> main`; `git ls-tree -r lnd-ops-room-site/main --name-only` -> `.env.example` and `.env.local` both present; raw fetch of each -> `HTTP 200` with both values populated; `.gitignore` now allow-lists `.env.local`
+- Not done, and not mine to decide: `supabase/setup.sql:51-70` still lets the `anon` role select, insert, update and delete every row in `chase_items`, so the now-public publishable key opens that table to anyone who copies it
 
