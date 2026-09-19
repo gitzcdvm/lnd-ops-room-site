@@ -15,3 +15,13 @@ One line per slice: what I did -> the command I ran -> what it actually printed.
 - Proved the page still reads with no pictures -> loaded a copy of `index.html` with no `images/` folder -> all 6 bands `display:none`, page height 10385 -> 5222, headings, card titles, step titles, the three slots and all contact links still present, `docScrollWidth` 1440 = `clientWidth`
 - Checked every link on the finished page -> `Select-String href=` -> booking `https://cal.com/gitz-cdvm-3oicgb/20-minute-intro-call`, `https://wa.me/919553893919?text=…`, `mailto:gitz.cdm@gmail.com?subject=…`, and nothing else
 - Colour audit -> hex values in the file: `#0B1F3A, #0E7C86, #111418, #F26B1D, #FFF6E9` only (the button hover shade was replaced with `filter:brightness(0.94)` to stay inside the palette)
+
+## New repository and environment file (19 Sep 2026)
+
+- Asked to reuse `.env.local` "from old remote" -> `git log --all --diff-filter=A -- '.env*'` -> nothing, and `git ls-tree -r origin/main` has no env file, so the old remote never had it; only the local, ignored `chase-board\.env.local` exists
+- Checked what the local file holds, names only -> `NEXT_PUBLIC_SUPABASE_URL` (40 chars), `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (46 chars); no service-role key
+- Checked whether publishing it would matter -> `supabase/setup.sql:51-70` -> four policies `using (true)` / `with check (true)` and `grant select, insert, update, delete ... to anon, authenticated`, so the publishable key is full read/write on `chase_items` -> held, did not publish it to the public repo
+- Confirmed the repo was not already carrying the values -> `git grep -E 'sb_publishable_|supabase\.co'` -> only `app/page.tsx:319`, which is the placeholder `https://your-project.supabase.co`
+- Published the names with no values instead -> `.env.example` plus `!.env.example` in `.gitignore` -> `git ls-tree -r lnd-ops-room-site/main --name-only` -> `.env.example` present, `.env.local` absent
+- Tried to set the two variables in Vercel -> `Get-Command vercel` -> not installed; `VERCEL_TOKEN` not set; no `.vercel` folder anywhere -> BLOCKED, needs the member
+
