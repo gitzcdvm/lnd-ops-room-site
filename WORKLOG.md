@@ -27,3 +27,14 @@ One line per slice: what I did -> the command I ran -> what it actually printed.
 - Member instructed the values to be published anyway -> `git add .env.local .env.example .gitignore`, commit `ffa1d99`, `git push` -> `26d2a8e..ffa1d99  main -> main`; `git ls-tree -r lnd-ops-room-site/main --name-only` -> `.env.example` and `.env.local` both present; raw fetch of each -> `HTTP 200` with both values populated; `.gitignore` now allow-lists `.env.local`
 - Not done, and not mine to decide: `supabase/setup.sql:51-70` still lets the `anon` role select, insert, update and delete every row in `chase_items`, so the now-public publishable key opens that table to anyone who copies it
 
+## Deploy the website (20 Sep 2026)
+
+- Member asked to deploy the one-page website, and chose GitHub Pages -> added `.nojekyll`, commit `a461a67`, `git push`
+- Turned Pages on -> `gh api -X POST repos/gitzcdvm/lnd-ops-room-site/pages -f "source[branch]=main" -f "source[path]=/"` -> `{"html_url":"https://gitzcdvm.github.io/lnd-ops-room-site/","build_type":"legacy","public":true,"https_enforced":true,"source":{"branch":"main","path":"/"}}`
+- Waited for the build -> `gh api repos/gitzcdvm/lnd-ops-room-site/pages/builds/latest --jq .status` -> `building`, then `built` (duration 22827 ms)
+- Fetched the live homepage -> `HTTP 200`, `text/html`, 20727 bytes; title `LnD Ops Room — batch form, chase board and morning digest`; H1 `Every batch, every rupee, in one room.`; `LnD Ops Room` x13; booking, WhatsApp and mailto links present; `25,000` x1; slots `[YOUR RESULT], [CLIENT QUOTE], [YOUR TIMELINE]`
+- Fetched live pictures -> `images/speaking.jpeg`, `images/shot-4.jpeg` `HTTP 200 image/jpeg`; `images/profile.png` `HTTP 200 image/png`; `images/logo_dark.jpeg` `HTTP 200 image/jpeg`
+- Rendered the live URL in Chrome -> 11/11 images loaded, `Bricolage Grotesque` and `Inter` both reported loaded, page height 10385 (same as local), `docScrollWidth` 1440 = `clientWidth`, failed requests: none
+- Checked what else the Pages URL serves -> `.env.local`, `.env.example`, `WORKLOG.md`, `supabase/setup.sql`, `app/page.tsx` all `HTTP 200`: Pages publishes the whole repo root, so the site and the app source share one URL space
+- Vercel was the documented host but there is no CLI, token or login on this machine -> not used; the chase-board Next.js app is NOT deployed anywhere
+
