@@ -38,3 +38,17 @@ One line per slice: what I did -> the command I ran -> what it actually printed.
 - Checked what else the Pages URL serves -> `.env.local`, `.env.example`, `WORKLOG.md`, `supabase/setup.sql`, `app/page.tsx` all `HTTP 200`: Pages publishes the whole repo root, so the site and the app source share one URL space
 - Vercel was the documented host but there is no CLI, token or login on this machine -> not used; the chase-board Next.js app is NOT deployed anywhere
 
+## Landing page split into its own repo (21 Sep 2026)
+
+- Member asked whether the landing page needs Supabase -> counted in `index.html`: `supabase` 0, `NEXT_PUBLIC` 0, `process.env` 0, `<script` 0, `<form` 0, `fetch(` 0; external hosts only `fonts.googleapis.com`, `fonts.gstatic.com`, `cal.com`, `wa.me`; local files only the 11 pictures -> no, it needs nothing from Supabase
+- Built a folder for the page alone -> `F:\gbr\FWAI\Hackathon Session 9\fwai-starter\lnd-ops-room-landing\`, copied from `chase-board`, then `Get-FileHash` -> `index.html` SHA256 `5BCADDF1…` identical both sides; 11 images compared, 0 mismatches
+- New repo -> `git init -b main`, commit `cb50b97` (14 files), `gh repo create lnd-ops-room-landing --public --source=. --remote=origin --push` -> first attempt printed `error connecting to api.github.com`; retried -> `https://github.com/gitzcdvm/lnd-ops-room-landing`, `* [new branch] HEAD -> main`
+- Checked the new tree -> `.nojekyll`, `README.md`, 11 `images/…`, `index.html`; no `env`, no `app/`, no `supabase`, no `package.json`; blob `a65439f7…` matches the page already verified in Chrome
+- Enabled Pages -> `{"html_url":"https://gitzcdvm.github.io/lnd-ops-room-landing/","public":true,"https_enforced":true,"source":{"branch":"main","path":"/"}}`; build `building` five polls, then `built`
+- Fetched the live homepage -> `HTTP 200`, `text/html`, 20727 bytes, title and H1 correct, booking, WhatsApp and mailto links all present
+- Every picture over HTTPS -> all 11 `HTTP 200` with correct content types, 0 failures
+- Rendered the live URL in Chrome -> 11/11 images loaded, both fonts loaded, page height 10385, `docScrollWidth` 1440 = `clientWidth`, failed requests: none
+- A first probe read 9/11 images because it sampled before two finished; waiting for every image to settle gave 11/11, so the page is complete, not short of pictures
+- Kept the `lnd-ops-room-site` Pages deployment live at the member's choice, so `.env.local` stays fetchable there
+- This repo carries no WORKLOG or REPORT on purpose: it is the customer-facing page, not the app
+
